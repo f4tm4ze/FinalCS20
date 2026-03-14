@@ -8,3 +8,6 @@ lightgbm>=4.3.0
 requests>=2.31.0
 androguard>=3.3.5
 cloudpickle
+
+fuzzywuzzy
+python-Levenshtein
