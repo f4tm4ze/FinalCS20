@@ -1,13 +1,1 @@
-# save as generate_features_json.py, run once, then delete
-import pickle, json, os
-
-with open("models/baseline_rf_results.pkl", "rb") as f:
-    data = pickle.load(f)
-
-features = [str(x) for x in data["features"]]
-os.makedirs("models", exist_ok=True)
-
-with open("models/features.json", "w") as f:
-    json.dump(features, f)
-
-print(f"Done — saved {len(features)} features to models/features.json")
+["transact", "SEND_SMS", "Ljava.lang.Class.getCanonicalName", "android.telephony.SmsManager", "Landroid.content.Context.unregisterReceiver", "RECEIVE_SMS", "Ljavax.crypto.spec.SecretKeySpec", "WRITE_SMS", "READ_SYNC_SETTINGS", "TelephonyManager.getSubscriberId", "AUTHENTICATE_ACCOUNTS", "CAMERA", "WRITE_HISTORY_BOOKMARKS", "WRITE_SYNC_SETTINGS", "android.telephony.gsm.SmsManager", "INSTALL_PACKAGES", "READ_HISTORY_BOOKMARKS", "android.intent.action.PACKAGE_REPLACED", "RECORD_AUDIO", "abortBroadcast", "URLClassLoader", "NFC", "ACCESS_LOCATION_EXTRA_COMMANDS", "android.intent.action.TIME_SET", "MODIFY_AUDIO_SETTINGS", "BIND_REMOTEVIEWS", "android.intent.action.PACKAGE_REMOVED", "getCallingPid", "READ_PROFILE", "RECEIVE_BOOT_COMPLETED", "createSubprocess", "READ_SYNC_STATS", "WAKE_LOCK", "RESTART_PACKAGES", "android.intent.action.TIMEZONE_CHANGED", "android.intent.action.PACKAGE_ADDED", "chmod", "Ljava.lang.Class.getDeclaredClasses", "android.intent.action.ACTION_POWER_DISCONNECTED", "TelephonyManager.getSimSerialNumber", "PathClassLoader", "BLUETOOTH", "TelephonyManager.getCallState", "READ_CALENDAR", "READ_EXTERNAL_STORAGE", "Runtime.load", "TelephonyManager.getSimCountryIso", "SUBSCRIBED_FEEDS_WRITE", "READ_CALL_LOG", "PackageInstaller", "HttpPost.init", "remount", "sendMultipartTextMessage", "android.intent.action.ACTION_SHUTDOWN", "ACCESS_NETWORK_STATE", "sendDataMessage", "Ljava.lang.Class.getClasses", "SUBSCRIBED_FEEDS_READ", "chown", "HttpUriRequest", "WRITE_CALENDAR", "MASTER_CLEAR", "TelephonyManager.isNetworkRoaming", "CHANGE_WIFI_MULTICAST_STATE", "DELETE_PACKAGES", "GLOBAL_SEARCH", "GET_TASKS", "android.intent.action.PACKAGE_DATA_CLEARED", "UPDATE_DEVICE_STATS", "WRITE_CALL_LOG", "android.intent.action.PACKAGE_CHANGED", "DELETE_CACHE_FILES", "android.intent.action.NEW_OUTGOING_CALL", "divideMessage", "BIND_INPUT_METHOD", "WRITE_USER_DICTIONARY", "REORDER_TASKS", "SET_WALLPAPER", "WRITE_PROFILE", "PROCESS_OUTGOING_CALLS", "READ_USER_DICTIONARY", "ACCESS_COARSE_LOCATION", "BATTERY_STATS", "CALL_PRIVILEGED", "Runtime.exec", "DUMP", "READ_SOCIAL_STREAM", "REBOOT", "BLUETOOTH_ADMIN", "BIND_WALLPAPER", "WRITE_SETTINGS", "RECEIVE_WAP_PUSH", "SET_TIME", "TelephonyManager.getNetworkOperator", "android.intent.action.SENDTO", "BIND_DEVICE_ADMIN"]
