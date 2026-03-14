@@ -2,12 +2,11 @@ streamlit>=1.35.0
 pandas>=2.2.0
 numpy>=1.26.0
 plotly>=5.18.0
-scikit-learn==1.6.1==1.6.1
+scikit-learn==1.6.1
 xgboost>=2.0.0
 lightgbm>=4.3.0
 requests>=2.31.0
 androguard>=3.3.5
 cloudpickle
-
 fuzzywuzzy
 python-Levenshtein
