@@ -6,8 +6,7 @@ import requests
 import streamlit as st
 
 # ── GitHub config (public repo, no token needed) ──────────────────────────────
-GITHUB_BASE = "https://github.com/f4tm4ze/FinalCS20/raw/main/models"
-
+GITHUB_BASE = "https://media.githubusercontent.com/media/f4tm4ze/FinalCS20/main/models"
 CACHE_DIR = "/tmp/cs20_models"
 
 MODEL_FILES = {
