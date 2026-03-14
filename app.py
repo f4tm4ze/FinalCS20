@@ -606,7 +606,7 @@ st.markdown("""
 
 # ── Model loading ─────────────────────────────────────────────────────────────
 with st.spinner("Initializing detection engine..."):
-    models, features = load_all_models()
+    model = load_model(selected_model)
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
