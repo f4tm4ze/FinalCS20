@@ -7,3 +7,4 @@ xgboost>=2.0.0
 lightgbm>=4.3.0
 requests>=2.31.0
 androguard>=3.3.5
+cloudpickle
