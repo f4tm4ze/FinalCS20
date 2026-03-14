@@ -1,4 +1,3 @@
-
 import numpy as np
 import threading
 import os
@@ -22,61 +21,35 @@ from fuzzywuzzy import fuzz
 
 
 # ── Rule-based heuristic engine ───────────────────────────────────────────────
-# Derived from research showing these are the most indicative features across
-# Drebin, CICAndMal2017, AM, and AMSF datasets.
-#
-# Each rule is (rule_id, label, severity, match_strings)
+# Each rule: (rule_id, label, severity, match_strings)
 # severity: "critical" | "high" | "medium"
-# A feature triggers the rule if ANY match_string is a substring of it (case-insensitive).
 
 HEURISTIC_RULES = [
-    # ── SMS abuse (Joker, premium-rate fraud) ─────────────────────────────────
-    ("R01", "SMS sending capability",          "critical", ["SEND_SMS", "sendTextMessage", "SmsManager"]),
-    ("R02", "SMS reading / interception",      "high",     ["RECEIVE_SMS", "READ_SMS", "abortBroadcast"]),
-
-    # ── Telephony abuse ───────────────────────────────────────────────────────
-    ("R03", "Phone call capability",           "high",     ["CALL_PHONE", "PROCESS_OUTGOING_CALLS", "TelephonyManager"]),
-
-    # ── Location tracking ─────────────────────────────────────────────────────
-    ("R04", "Precise location access",         "high",     ["ACCESS_FINE_LOCATION", "getLastKnownLocation", "requestLocationUpdates"]),
-
-    # ── Dangerous permissions (from Drebin/AM datasets) ───────────────────────
-    ("R05", "App uninstall capability",        "high",     ["UNINSTALL_SHORTCUT", "DELETE_PACKAGES", "REQUEST_UNINSTALL_PACKAGES"]),
-    ("R06", "Vibrate / notification abuse",    "medium",   ["VIBRATE"]),
-    ("R07", "Device admin / root access",      "critical", ["BIND_DEVICE_ADMIN", "ROOT", "su\x00", "/system/bin/su"]),
-
-    # ── Reflection / dynamic loading (obfuscation indicators) ────────────────
-    ("R08", "Java reflection usage",           "high",     ["getCanonicalName", "getDeclaredMethod", "forName", "invoke"]),
-    ("R09", "Dynamic code loading",            "critical", ["DexClassLoader", "PathClassLoader", "loadDex", "dalvik.system"]),
-
-    # ── Network / C2 indicators ───────────────────────────────────────────────
-    ("R10", "Raw socket / network access",     "medium",   ["INTERNET", "java.net.Socket", "HttpURLConnection", "OkHttp"]),
-    ("R11", "Network state monitoring",        "medium",   ["ACCESS_NETWORK_STATE", "CHANGE_NETWORK_STATE", "ConnectivityManager"]),
-
-    # ── Surveillance ──────────────────────────────────────────────────────────
-    ("R12", "Camera access",                   "medium",   ["CAMERA", "android.hardware.camera"]),
-    ("R13", "Microphone / audio recording",    "high",     ["RECORD_AUDIO", "AudioRecord", "MediaRecorder"]),
-    ("R14", "Contact / account harvesting",    "high",     ["READ_CONTACTS", "GET_ACCOUNTS", "AccountManager"]),
-
-    # ── Persistence ───────────────────────────────────────────────────────────
-    ("R15", "Boot persistence",                "high",     ["RECEIVE_BOOT_COMPLETED", "BOOT_COMPLETED"]),
-    ("R16", "Foreground service abuse",        "medium",   ["FOREGROUND_SERVICE", "startForeground"]),
-
-    # ── Known malware class patterns ─────────────────────────────────────────
-    ("R17", "Known Joker/adware class pattern","critical", ["com.joker", "joker.sdk", "com.simple.support"]),
-    ("R18", "Native code execution",           "high",     ["System.loadLibrary", "Runtime.exec", "ProcessBuilder"]),
+    ("R01", "SMS sending capability",           "critical", ["SEND_SMS", "sendTextMessage", "SmsManager"]),
+    ("R02", "SMS reading / interception",       "high",     ["RECEIVE_SMS", "READ_SMS", "abortBroadcast"]),
+    ("R03", "Phone call capability",            "high",     ["CALL_PHONE", "PROCESS_OUTGOING_CALLS", "TelephonyManager"]),
+    ("R04", "Precise location access",          "high",     ["ACCESS_FINE_LOCATION", "getLastKnownLocation", "requestLocationUpdates"]),
+    ("R05", "App uninstall capability",         "high",     ["UNINSTALL_SHORTCUT", "DELETE_PACKAGES", "REQUEST_UNINSTALL_PACKAGES"]),
+    ("R06", "Vibrate / notification abuse",     "medium",   ["VIBRATE"]),
+    ("R07", "Device admin / root access",       "critical", ["BIND_DEVICE_ADMIN", "ROOT", "su\x00", "/system/bin/su"]),
+    ("R08", "Java reflection usage",            "high",     ["getCanonicalName", "getDeclaredMethod", "forName", "invoke"]),
+    ("R09", "Dynamic code loading",             "critical", ["DexClassLoader", "PathClassLoader", "loadDex", "dalvik.system"]),
+    ("R10", "Raw socket / network access",      "medium",   ["INTERNET", "java.net.Socket", "HttpURLConnection", "OkHttp"]),
+    ("R11", "Network state monitoring",         "medium",   ["ACCESS_NETWORK_STATE", "CHANGE_NETWORK_STATE", "ConnectivityManager"]),
+    ("R12", "Camera access",                    "medium",   ["CAMERA", "android.hardware.camera"]),
+    ("R13", "Microphone / audio recording",     "high",     ["RECORD_AUDIO", "AudioRecord", "MediaRecorder"]),
+    ("R14", "Contact / account harvesting",     "high",     ["READ_CONTACTS", "GET_ACCOUNTS", "AccountManager"]),
+    ("R15", "Boot persistence",                 "high",     ["RECEIVE_BOOT_COMPLETED", "BOOT_COMPLETED"]),
+    ("R16", "Foreground service abuse",         "medium",   ["FOREGROUND_SERVICE", "startForeground"]),
+    ("R17", "Known Joker/adware class pattern", "critical", ["com.joker", "joker.sdk", "com.simple.support"]),
+    ("R18", "Native code execution",            "high",     ["System.loadLibrary", "Runtime.exec", "ProcessBuilder"]),
 ]
-
-# Minimum severity to trigger a heuristic flag
-# critical = always flag | high = flag if 2+ hits | medium = informational only
-CRITICAL_SEVERITY = {"critical"}
-HIGH_SEVERITY     = {"critical", "high"}
 
 
 @dataclass
 class HeuristicResult:
     flagged: bool = False
-    triggered_rules: list = field(default_factory=list)   # list of (rule_id, label, severity, matched_on)
+    triggered_rules: list = field(default_factory=list)
     critical_hits: int = 0
     high_hits: int = 0
     medium_hits: int = 0
@@ -93,10 +66,6 @@ class HeuristicResult:
 
 
 def run_heuristics(app_features_set: set) -> HeuristicResult:
-    """
-    Run all heuristic rules against the extracted feature set.
-    Returns a HeuristicResult with triggered rules and a flagged verdict.
-    """
     result = HeuristicResult()
     features_lower = {f.lower() for f in app_features_set}
 
@@ -118,32 +87,24 @@ def run_heuristics(app_features_set: set) -> HeuristicResult:
             else:
                 result.medium_hits += 1
 
-    # Flag if any critical hit OR 2+ high hits
     result.flagged = result.critical_hits > 0 or result.high_hits >= 2
     return result
 
 
 def _extract_apk_from_xapk(xapk_path):
-    """
-    Extract the primary .apk from an .xapk (which is a ZIP).
-    Returns a path to a temp .apk file, or None if not found.
-    The caller is responsible for deleting the temp file.
-    """
+    """Extract the primary .apk from an .xapk (ZIP). Returns temp path or None."""
     try:
         with zipfile.ZipFile(xapk_path, 'r') as z:
             apk_entries = [
                 name for name in z.namelist()
-                if name.endswith('.apk') and '/' not in name  # top-level APKs only
+                if name.endswith('.apk') and '/' not in name
             ]
             if not apk_entries:
-                # Fallback: any .apk inside
                 apk_entries = [name for name in z.namelist() if name.endswith('.apk')]
-
             if not apk_entries:
                 print("[feature_extractor] No .apk found inside XAPK")
                 return None
 
-            # Pick the largest APK (usually the base/main one)
             apk_entries.sort(key=lambda n: z.getinfo(n).file_size, reverse=True)
             chosen = apk_entries[0]
             print(f"[feature_extractor] Extracting '{chosen}' from XAPK")
@@ -158,10 +119,7 @@ def _extract_apk_from_xapk(xapk_path):
 
 
 def _analyze_apk_with_timeout(apk_path, timeout=60):
-    """
-    Run AnalyzeAPK in a thread with a timeout.
-    Returns (a, d, dx) or (None, None, None) if it times out.
-    """
+    """Run AnalyzeAPK in a thread with a timeout."""
     result = [None, None, None]
     error  = [None]
 
@@ -177,11 +135,10 @@ def _analyze_apk_with_timeout(apk_path, timeout=60):
     t.join(timeout)
 
     if t.is_alive():
-        print(f"[feature_extractor] AnalyzeAPK timed out after {timeout}s — falling back to APK-only mode")
+        print(f"[feature_extractor] AnalyzeAPK timed out after {timeout}s — APK-only mode")
         return None, None, None
-
     if error[0]:
-        print(f"[feature_extractor] AnalyzeAPK error: {error[0]} — falling back to APK-only mode")
+        print(f"[feature_extractor] AnalyzeAPK error: {error[0]} — APK-only mode")
         return None, None, None
 
     return result[0], result[1], result[2]
@@ -189,41 +146,30 @@ def _analyze_apk_with_timeout(apk_path, timeout=60):
 
 def extract_features(apk_path, most_relevant_features):
     """
-    Extract features from an APK or XAPK file and map them against the most
-    relevant feature list used during model training.
-
-    Supports:
-      - .apk  files directly
-      - .xapk files (extracts the primary APK first)
-
-    Strategy:
-      1. If XAPK, unpack the primary APK to a temp file.
-      2. Try AnalyzeAPK with a timeout to get DEX classes/methods.
-      3. If it times out or fails, fall back to APK-only parsing.
-      4. Match using: exact → substring → fuzzy fallback.
+    Extract features from an APK or XAPK and map against the trained feature list.
+    Returns (feature_vector, matches, heuristic_result).
     """
-    temp_apk_path = None  # track temp file from XAPK extraction
+    temp_apk_path = None
 
     try:
         classes = []
         methods = []
 
-        # ── Step 0: Handle XAPK ───────────────────────────────────────────────
+        # Step 0: Handle XAPK
         ext = os.path.splitext(apk_path)[1].lower()
         actual_apk_path = apk_path
 
         if ext == '.xapk':
-            print(f"[feature_extractor] XAPK detected — extracting inner APK...")
+            print("[feature_extractor] XAPK detected — extracting inner APK...")
             temp_apk_path = _extract_apk_from_xapk(apk_path)
             if temp_apk_path is None:
                 raise ValueError("Could not extract a valid APK from the XAPK file.")
             actual_apk_path = temp_apk_path
-        # ─────────────────────────────────────────────────────────────────────
 
-        # ── Step 1: Try full DEX analysis (with timeout) ──────────────────────
+        # Step 1: Try full DEX analysis (with timeout)
         file_size_mb = os.path.getsize(actual_apk_path) / (1024 * 1024)
         if file_size_mb > 100:
-            print(f"[feature_extractor] File is {file_size_mb:.1f} MB — skipping DEX analysis, using APK-only mode")
+            print(f"[feature_extractor] {file_size_mb:.1f} MB — skipping DEX, APK-only mode")
             a, d, dx = None, None, None
         else:
             a, d, dx = _analyze_apk_with_timeout(actual_apk_path, timeout=30)
@@ -248,9 +194,8 @@ def extract_features(apk_path, most_relevant_features):
                     print(f"[feature_extractor] DEX parse warning: {e}")
 
         print(f"[feature_extractor] DEX classes: {len(classes)}, methods: {len(methods)}")
-        # ─────────────────────────────────────────────────────────────────────
 
-        # ── Step 2: APK-level features ────────────────────────────────────────
+        # Step 2: APK-level features
         permissions       = a.get_permissions()  or []
         hardware_software = a.get_features()     or []
         activities        = a.get_activities()   or []
@@ -277,23 +222,14 @@ def extract_features(apk_path, most_relevant_features):
                                 all_intents.append(val)
 
         app_extracted_features = (
-            permissions
-            + hardware_software
-            + activities
-            + providers
-            + receivers
-            + services
-            + all_intents
-            + classes
-            + methods
+            permissions + hardware_software + activities + providers
+            + receivers + services + all_intents + classes + methods
         )
-        # ─────────────────────────────────────────────────────────────────────
 
         print(f"[feature_extractor] Total extracted features: {len(app_extracted_features)}")
 
-        # ── Step 3: Match against trained feature list ────────────────────────
+        # Step 3: Match against trained feature list
         app_features_set = {str(f) for f in app_extracted_features if f is not None}
-
         extraction_result = []
         matches = []
 
@@ -305,10 +241,7 @@ def extract_features(apk_path, most_relevant_features):
                 matches.append((required_feature, req_str))
                 continue
 
-            sub_match = next(
-                (f for f in app_features_set if req_str and req_str in f),
-                None
-            )
+            sub_match = next((f for f in app_features_set if req_str and req_str in f), None)
             if sub_match:
                 extraction_result.append(1)
                 matches.append((required_feature, sub_match))
@@ -329,21 +262,19 @@ def extract_features(apk_path, most_relevant_features):
                 matches.append((required_feature, best_feat))
             else:
                 extraction_result.append(0)
-        # ─────────────────────────────────────────────────────────────────────
 
-        print(f"\n--- Matches found: {len(matches)} / {len(most_relevant_features)} features ---")
+        print(f"\n--- Matches: {len(matches)} / {len(most_relevant_features)} features ---")
         for match in matches[:10]:
             print(f"  {match[0]}  →  {match[1]}")
         if len(matches) > 10:
             print(f"  ... and {len(matches) - 10} more")
 
-        # ── Step 4: Run heuristic rules ───────────────────────────────────────
+        # Step 4: Run heuristics
         heuristic = run_heuristics(app_features_set)
         print(f"\n--- Heuristics: flagged={heuristic.flagged} | "
               f"critical={heuristic.critical_hits} high={heuristic.high_hits} medium={heuristic.medium_hits} ---")
         for r in heuristic.triggered_rules:
             print(f"  [{r[2].upper()}] {r[0]} {r[1]}  →  '{r[3]}'")
-        # ─────────────────────────────────────────────────────────────────────
 
         return np.array(extraction_result).reshape(1, -1), matches, heuristic
 
@@ -354,7 +285,6 @@ def extract_features(apk_path, most_relevant_features):
         return np.zeros((1, len(most_relevant_features))), [], HeuristicResult()
 
     finally:
-        # Clean up temp APK extracted from XAPK
         if temp_apk_path and os.path.exists(temp_apk_path):
             try:
                 os.unlink(temp_apk_path)

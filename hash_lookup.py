@@ -1,12 +1,9 @@
-
 """
 hash_lookup.py
 ──────────────
 SHA-256 reputation lookup against:
   1. MalwareBazaar  (free, no key required)
-  2. VirusTotal     (optional — requires API key in env var VT_API_KEY)
-
-Returns a unified ThreatIntel dataclass.
+  2. VirusTotal     (optional — set VT_API_KEY env var in Streamlit secrets)
 """
 
 import hashlib
@@ -16,8 +13,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
 def sha256_of_file(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -26,16 +21,13 @@ def sha256_of_file(path: str) -> str:
     return h.hexdigest()
 
 
-# ── Result dataclass ──────────────────────────────────────────────────────────
-
 @dataclass
 class ThreatIntel:
     sha256: str
-    found: bool = False                  # known to any threat intel source
-    malicious: bool = False              # at least one source says malicious
+    found: bool = False
+    malicious: bool = False
     sources: list = field(default_factory=list)
 
-    # MalwareBazaar fields
     mb_tags: list       = field(default_factory=list)
     mb_signature: str   = ""
     mb_first_seen: str  = ""
@@ -43,15 +35,12 @@ class ThreatIntel:
     mb_file_type: str   = ""
     mb_url: str         = ""
 
-    # VirusTotal fields
     vt_malicious: int   = 0
     vt_total: int       = 0
     vt_url: str         = ""
 
     error: str          = ""
 
-
-# ── MalwareBazaar ─────────────────────────────────────────────────────────────
 
 def lookup_malwarebazaar(sha256: str, timeout: int = 10) -> ThreatIntel:
     intel = ThreatIntel(sha256=sha256)
@@ -63,7 +52,6 @@ def lookup_malwarebazaar(sha256: str, timeout: int = 10) -> ThreatIntel:
         )
         resp.raise_for_status()
         data = resp.json()
-
         query_status = data.get("query_status", "")
 
         if query_status == "hash_not_found":
@@ -73,8 +61,8 @@ def lookup_malwarebazaar(sha256: str, timeout: int = 10) -> ThreatIntel:
 
         if query_status == "ok":
             info = data.get("data", [{}])[0]
-            intel.found      = True
-            intel.malicious  = True          # presence in MB == malicious
+            intel.found        = True
+            intel.malicious    = True
             intel.sources.append("MalwareBazaar")
             intel.mb_tags      = info.get("tags") or []
             intel.mb_signature = info.get("signature") or ""
@@ -84,7 +72,6 @@ def lookup_malwarebazaar(sha256: str, timeout: int = 10) -> ThreatIntel:
             intel.mb_url       = f"https://bazaar.abuse.ch/sample/{sha256}/"
             return intel
 
-        # Unexpected status
         intel.error = f"MalwareBazaar: unexpected status '{query_status}'"
         return intel
 
@@ -96,10 +83,7 @@ def lookup_malwarebazaar(sha256: str, timeout: int = 10) -> ThreatIntel:
         return intel
 
 
-# ── VirusTotal (optional) ─────────────────────────────────────────────────────
-
 def lookup_virustotal(sha256: str, api_key: str, timeout: int = 10) -> Optional[ThreatIntel]:
-    """Returns None if no api_key provided."""
     if not api_key:
         return None
 
@@ -132,37 +116,27 @@ def lookup_virustotal(sha256: str, api_key: str, timeout: int = 10) -> Optional[
         return intel
 
 
-# ── Combined lookup ───────────────────────────────────────────────────────────
-
 def lookup_hash(sha256: str) -> ThreatIntel:
-    """
-    Query MalwareBazaar (always) and VirusTotal (if VT_API_KEY env var is set).
-    Merges results into a single ThreatIntel object.
-    """
+    """Query MalwareBazaar (always) and VirusTotal (if VT_API_KEY is set)."""
     vt_key = os.environ.get("VT_API_KEY", "")
-
     mb = lookup_malwarebazaar(sha256)
 
-    vt = None
     if vt_key:
         vt = lookup_virustotal(sha256, vt_key)
-
-    # Merge VirusTotal into mb result
-    if vt:
-        if vt.found:
-            mb.found = True
-        if vt.malicious:
-            mb.malicious = True
-        if "VirusTotal" in vt.sources and "VirusTotal" not in mb.sources:
-            mb.sources.append("VirusTotal")
-        mb.vt_malicious = vt.vt_malicious
-        mb.vt_total     = vt.vt_total
-        mb.vt_url       = vt.vt_url
+        if vt:
+            if vt.found:
+                mb.found = True
+            if vt.malicious:
+                mb.malicious = True
+            if "VirusTotal" in vt.sources and "VirusTotal" not in mb.sources:
+                mb.sources.append("VirusTotal")
+            mb.vt_malicious = vt.vt_malicious
+            mb.vt_total     = vt.vt_total
+            mb.vt_url       = vt.vt_url
 
     return mb
 
 
-def lookup_file(path: str) -> tuple[str, ThreatIntel]:
-    """Hash a file and look it up. Returns (sha256, ThreatIntel)."""
+def lookup_file(path: str) -> tuple:
     sha256 = sha256_of_file(path)
     return sha256, lookup_hash(sha256)
