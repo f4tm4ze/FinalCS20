@@ -18,7 +18,7 @@ def safe_bool_check(val):
 
 st.set_page_config(
     page_title="Android Malware Detector",
-    page_icon="≡ƒ¢í∩╕Å",
+    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -210,7 +210,7 @@ st.markdown("""
     .stButton > button:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 28px rgba(56, 189, 248, 0.45) !important; }
     .stButton > button:active { transform: translateY(0) !important; }
 
-    /* ΓöÇΓöÇ Verdict cards ΓöÇΓöÇ */
+    /* ── Verdict cards ── */
     .results-heading { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); text-align: center; margin-bottom: 1.25rem; }
 
     .result-safe    { background: var(--success-dim); border: 1px solid rgba(52,211,153,0.3); border-radius: 14px; padding: 2rem; text-align: center; box-shadow: var(--glow-success); position: relative; overflow: hidden; }
@@ -227,7 +227,7 @@ st.markdown("""
     .verdict.red    { color: var(--error); }
     .verdict-sub    { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.4rem; font-weight: 300; }
 
-    /* ΓöÇΓöÇ Threat Intel panel ΓöÇΓöÇ */
+    /* ── Threat Intel panel ── */
     .intel-panel {
         background: var(--error-dim);
         border: 1px solid rgba(248,113,113,0.25);
@@ -254,7 +254,7 @@ st.markdown("""
     .intel-link { color:var(--accent); text-decoration:none; font-size:0.62rem; }
     .intel-link:hover { text-decoration:underline; }
 
-    /* ΓöÇΓöÇ Warning panel (hash not found but model flagged) ΓöÇΓöÇ */
+    /* ── Warning panel (hash not found but model flagged) ── */
     .warning-panel {
         background: var(--warning-dim);
         border: 1px solid rgba(251,191,36,0.25);
@@ -263,7 +263,7 @@ st.markdown("""
         color: var(--warning); line-height: 1.6;
     }
 
-    /* ΓöÇΓöÇ Source badges ΓöÇΓöÇ */
+    /* ── Source badges ── */
     .source-badge {
         display:inline-flex; align-items:center; gap:5px;
         background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3);
@@ -272,7 +272,7 @@ st.markdown("""
         margin:2px;
     }
 
-    /* ΓöÇΓöÇ Summary card ΓöÇΓöÇ */
+    /* ── Summary card ── */
     .summary-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--text-muted); line-height:2; }
     .summary-card .row { display:flex; gap:1rem; align-items:baseline; }
     .summary-card .row .key { color:var(--text-secondary); min-width:72px; }
@@ -287,7 +287,7 @@ st.markdown("""
 
     .footer-text { text-align:center; color:var(--text-muted); padding:2.5rem 0 1rem; font-size:0.75rem; font-family:'Space Mono',monospace; letter-spacing:0.08em; border-top:1px solid var(--border); margin-top:3rem; }
 
-    /* ΓöÇΓöÇ Heuristics panel ΓöÇΓöÇ */
+    /* ── Heuristics panel ── */
     .heuristic-panel {
         background: var(--surface); border: 1px solid var(--border);
         border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 1rem;
@@ -339,7 +339,7 @@ st.markdown("""
     .h-count-chip.h { background:rgba(251,191,36,0.10);  color:var(--warning); border:1px solid rgba(251,191,36,0.25); }
     .h-count-chip.m { background:rgba(56,189,248,0.07);  color:var(--accent);  border:1px solid rgba(56,189,248,0.18); }
 
-    /* ΓöÇΓöÇ Confidence panel ΓöÇΓöÇ */
+    /* ── Confidence panel ── */
     .confidence-panel {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -410,7 +410,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Session state ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Session state ─────────────────────────────────────────────────────────────
 for key, default in [
     ("step", 1), ("result", None),
     ("result_filename", ""), ("result_model", ""),
@@ -419,7 +419,7 @@ for key, default in [
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ΓöÇΓöÇ Step renderer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Step renderer ─────────────────────────────────────────────────────────────
 def render_steps():
     s = st.session_state
     done = {1: True, 2: s.step >= 2, 3: s.step >= 4, 4: s.result is not None}
@@ -428,7 +428,7 @@ def render_steps():
     for i, label in enumerate(labels):
         num = i + 1
         if done[num]:
-            dot_cls, lbl_cls, inner = "done", "done", "Γ£ô"
+            dot_cls, lbl_cls, inner = "done", "done", "✓"
         else:
             dot_cls, lbl_cls, inner = "", "", str(num)
         html += f'<div class="step-item"><div class="step-dot {dot_cls}">{inner}</div><div class="step-label {lbl_cls}">{label}</div></div>'
@@ -438,24 +438,24 @@ def render_steps():
     html += "</div>"
     st.markdown(html, unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Intel panel renderer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Intel panel renderer ──────────────────────────────────────────────────────
 def render_intel_panel(intel: ThreatIntel):
     if not intel or not intel.found:
         return
 
-    tags_html = "".join(f'<span class="intel-val tag">{t}</span>' for t in intel.mb_tags) if intel.mb_tags else '<span class="intel-val">ΓÇö</span>'
+    tags_html = "".join(f'<span class="intel-val tag">{t}</span>' for t in intel.mb_tags) if intel.mb_tags else '<span class="intel-val">—</span>'
     sources_html = "".join(f'<span class="source-badge">ΓÜæ {s}</span>' for s in intel.sources)
 
-    mb_link = f'<a class="intel-link" href="{intel.mb_url}" target="_blank">View on MalwareBazaar Γåù</a>' if intel.mb_url else ""
-    vt_link  = f' &nbsp;┬╖&nbsp; <a class="intel-link" href="{intel.vt_url}" target="_blank">View on VirusTotal Γåù</a>' if intel.vt_url else ""
+    mb_link = f'<a class="intel-link" href="{intel.mb_url}" target="_blank">View on MalwareBazaar ↗</a>' if intel.mb_url else ""
+    vt_link  = f' &nbsp;·&nbsp; <a class="intel-link" href="{intel.vt_url}" target="_blank">View on VirusTotal ↗</a>' if intel.vt_url else ""
 
     vt_row = ""
     if intel.vt_total > 0:
         vt_row = f'<div class="intel-row"><span class="intel-key">VT DETECT</span><span class="intel-val" style="color:var(--error);">{intel.vt_malicious} / {intel.vt_total} engines</span></div>'
 
-    sig = intel.mb_signature or "ΓÇö"
-    reporter = intel.mb_reporter or "ΓÇö"
-    first_seen = intel.mb_first_seen[:10] if intel.mb_first_seen else "ΓÇö"
+    sig = intel.mb_signature or "—"
+    reporter = intel.mb_reporter or "—"
+    first_seen = intel.mb_first_seen[:10] if intel.mb_first_seen else "—"
 
     st.markdown(f"""
     <div class="intel-panel">
@@ -471,7 +471,7 @@ def render_intel_panel(intel: ThreatIntel):
     </div>
     """, unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Heuristic panel renderer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Heuristic panel renderer ──────────────────────────────────────────────────
 def render_heuristic_panel(heuristic: HeuristicResult):
     from feature_extractor import HEURISTIC_RULES
 
@@ -521,23 +521,23 @@ def render_heuristic_panel(heuristic: HeuristicResult):
     )
     st.markdown(full_html, unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Results renderer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Results renderer ──────────────────────────────────────────────────────────
 def render_results(prediction, confidence, filename, model_used, intel: ThreatIntel, sha256: str, heuristic: HeuristicResult):
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown('<div class="results-heading">Analysis Results</div>', unsafe_allow_html=True)
 
-    # ΓöÇΓöÇ Determine final verdict ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    # ── Determine final verdict ───────────────────────────────────────────────
     hash_says_malware      = intel and intel.found and intel.malicious
     ml_says_malware        = prediction == 1
     heuristic_says_malware = heuristic and heuristic.flagged
 
     final_malware = hash_says_malware or ml_says_malware or heuristic_says_malware
 
-    # ΓöÇΓöÇ Verdict card ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    # ── Verdict card ──────────────────────────────────────────────────────────
     if final_malware:
         st.markdown("""
         <div class="result-malware">
-            <div class="verdict red">ΓÜá MALWARE DETECTED</div>
+            <div class="verdict red">⚠ MALWARE DETECTED</div>
             <div class="verdict-sub">Malicious signatures have been detected in this application. Installation is strongly discouraged.</div>
         </div>
         """, unsafe_allow_html=True)
@@ -549,14 +549,14 @@ def render_results(prediction, confidence, filename, model_used, intel: ThreatIn
         </div>
         """, unsafe_allow_html=True)
 
-    # ΓöÇΓöÇ Threat intel panel (if hash found) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    # ── Threat intel panel (if hash found) ────────────────────────────────────
     if hash_says_malware:
         render_intel_panel(intel)
 
-    # ΓöÇΓöÇ Heuristics panel (always shown) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    # ── Heuristics panel (always shown) ──────────────────────────────────────
     render_heuristic_panel(heuristic)
 
-    # ΓöÇΓöÇ Confidence gauge ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    # ── Confidence gauge ──────────────────────────────────────────────────────
     conf_pct   = round(confidence * 100, 1)
     bar_color  = "#F87171" if final_malware else "#34D399"
     glow_color = "rgba(248,113,113,0.35)" if final_malware else "rgba(52,211,153,0.35)"
@@ -589,13 +589,13 @@ def render_results(prediction, confidence, filename, model_used, intel: ThreatIn
         </div>
         <div class="conf-sub">
             Classifier: <span style="color:var(--text-secondary);">{model_used}</span>
-            &nbsp;┬╖&nbsp; Verdict: <span style="color:{label_color};">{'MALWARE' if final_malware else 'CLEAN'}</span>
+            &nbsp;·&nbsp; Verdict: <span style="color:{label_color};">{'MALWARE' if final_malware else 'CLEAN'}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 
-# ΓöÇΓöÇ Header ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
     <div class="header-eyebrow">Static Analysis + Threat Intelligence</div>
@@ -604,15 +604,15 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Model loading ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Model loading ─────────────────────────────────────────────────────────────
 with st.spinner("Initializing detection engine..."):
     models, features = load_all_models()
 
-# ΓöÇΓöÇ Sidebar ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-header">
-        <div class="shield-icon">≡ƒ¢í∩╕Å</div>
+        <div class="shield-icon">🛡️</div>
         <div class="brand-name">Android<span>MALWARE DETECTOR</span></div>
     </div>
     """, unsafe_allow_html=True)
@@ -634,11 +634,11 @@ with st.sidebar:
     st.markdown("---")
     st.markdown('<div class="sidebar-section-label">Available Models</div>', unsafe_allow_html=True)
     for name in model_names:
-        active = "Γ£ª " if name == selected_model else "┬╖ "
+        active = "✦ " if name == selected_model else "· "
         color  = "var(--accent)" if name == selected_model else "var(--text-muted)"
         st.markdown(f'<p style="font-family:Space Mono,monospace;font-size:0.7rem;color:{color};margin:4px 0;">{active}{name}</p>', unsafe_allow_html=True)
 
-# ΓöÇΓöÇ Main content ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Main content ──────────────────────────────────────────────────────────────
 _, center, _ = st.columns([1, 3, 1])
 with center:
 
@@ -668,11 +668,11 @@ with center:
 
         file_size_mb = uploaded_file.size / (1024 * 1024)
         size_color   = "#F87171" if file_size_mb > 600 else "#FBBF24" if file_size_mb > 200 else "#34D399"
-        size_icon    = "ΓÜá" if file_size_mb > 200 else "Γ£ô"
+        size_icon    = "⚠" if file_size_mb > 200 else "✓"
         file_ext     = uploaded_file.name.rsplit(".", 1)[-1].upper() if "." in uploaded_file.name else "APK"
         st.markdown(f"""
         <div class="file-info-bar">
-            <span class="fi-icon">≡ƒôª</span>
+            <span class="fi-icon">📦</span>
             <span class="fi-name">{uploaded_file.name}</span>
             <span style="font-family:Space Mono,monospace;font-size:0.58rem;color:var(--accent);background:var(--accent-dim);border:1px solid var(--border-bright);border-radius:4px;padding:1px 6px;flex-shrink:0;">{file_ext}</span>
             <span class="fi-size" style="color:{size_color};">{size_icon} {file_size_mb:.1f} MB</span>
@@ -680,9 +680,9 @@ with center:
         """, unsafe_allow_html=True)
 
         if file_size_mb > 600:
-            st.warning(f"ΓÜá Very large file: {file_size_mb:.1f} MB ΓÇö processing will take several minutes.")
+            st.warning(f"⚠ Very large file: {file_size_mb:.1f} MB — processing will take several minutes.")
         elif file_size_mb > 400:
-            st.warning(f"ΓÜá Large file: {file_size_mb:.1f} MB ΓÇö processing may take a few minutes.")
+            st.warning(f"⚠ Large file: {file_size_mb:.1f} MB — processing may take a few minutes.")
 
         file_suffix = '.xapk' if uploaded_file.name.lower().endswith('.xapk') else '.apk'
         with tempfile.NamedTemporaryFile(delete=False, suffix=file_suffix) as tmp_file:
@@ -699,7 +699,7 @@ with center:
             st.session_state.sha256    = ""
             st.session_state.heuristic = None
 
-            with st.spinner("Step 1/2 ΓÇö Hashing file and querying threat databases..."):
+            with st.spinner("Step 1/2 — Hashing file and querying threat databases..."):
                 try:
                     from hash_lookup import sha256_of_file, lookup_hash
                     original_sha256 = sha256_of_file(tmp_path)
@@ -723,7 +723,7 @@ with center:
                     st.session_state.intel = None
                     print(f"[hash_lookup] error: {e}")
 
-            with st.spinner("Step 2/2 ΓÇö Extracting features, running ML + heuristics..."):
+            with st.spinner("Step 2/2 — Extracting features, running ML + heuristics..."):
                 try:
                     feature_vector, matches, heuristic = extract_features(tmp_path, features)
                     model      = models[selected_model]
@@ -763,7 +763,7 @@ with center:
                 st.session_state.heuristic,
             )
 
-# ΓöÇΓöÇ Footer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+# ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer-text">
     Android Malware Detection Engine
