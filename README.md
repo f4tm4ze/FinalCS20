@@ -11,23 +11,23 @@ Android malware is becoming increasingly sophisticated, making traditional signa
 - **User-Friendly Interface:** Input app features to get predictions.
 
 ## Usage
-- **Input Android app features (or APK data preprocessed to features).
-- **The model predicts malicious or benign.
-- **Results include probability scores for better analysis.
+- Input Android app features (or APK data preprocessed to features).
+- The model predicts malicious or benign.
+- Results include probability scores for better analysis.
 
 ## Evaluation Metrics
-- **Accuracy
-- **Precision
-- **Recall
-- **F1-Score
-- **ROC-AUC
+- **Accuracy**
+- **Precision**
+- **Recall**
+- **F1-Score**
+- **ROC-AUC**
 
 ## Key Advantages
-- **Combines multiple ML models for improved detection.
-- **Works with static app features, making it safer than dynamic methods.
-- **Easily extendable and adaptable to new malware variants.
+- Combines multiple ML models for improved detection.
+- Works with static app features, making it safer than dynamic methods.
+- Easily extendable and adaptable to new malware variants.
 
 ## Technologies Used
-- **Python, scikit-learn, XGBoost, LightGBM
-- **Pandas, NumPy for data processing
-- **Streamlit
+- Python, scikit-learn, XGBoost, LightGBM
+- Pandas, NumPy for data processing
+- Streamlit
