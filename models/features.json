@@ -1,0 +1,13 @@
+# save as generate_features_json.py, run once, then delete
+import pickle, json, os
+
+with open("models/baseline_rf_results.pkl", "rb") as f:
+    data = pickle.load(f)
+
+features = [str(x) for x in data["features"]]
+os.makedirs("models", exist_ok=True)
+
+with open("models/features.json", "w") as f:
+    json.dump(features, f)
+
+print(f"Done — saved {len(features)} features to models/features.json")
