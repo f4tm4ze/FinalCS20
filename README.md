@@ -9,7 +9,7 @@ A static analysis tool for detecting malicious Android applications using a hybr
 Android malware is becoming increasingly sophisticated, making traditional signature-based detection insufficient. This project implements a multi-layered detection pipeline that combines:
 
 - **Machine Learning Classification** — A hybrid stacking ensemble of XGBoost, LightGBM, Random Forest, and Extra Trees
-- **Rule-Based Heuristics** — 18 static analysis rules derived from Drebin, CICAndMal2017, and AMSF research datasets
+- **Rule-Based Heuristics** — 18 static analysis rules derived from Drebin research datasets
 - **Threat Intelligence** — Real-time SHA-256 hash lookups against MalwareBazaar and VirusTotal
 
 The system performs entirely static analysis — no app execution required.
