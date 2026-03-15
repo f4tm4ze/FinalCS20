@@ -560,7 +560,7 @@ with center:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        if st.button("🔍 Run Analysis", use_container_width=True):
+        if st.button("Run Analysis", use_container_width=True):
             error = None
             st.session_state.step      = 3
             st.session_state.result    = None
