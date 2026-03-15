@@ -187,7 +187,7 @@ Tested on a held-out split across Drebin + CICAndMal2017 + AM + AMSF combined da
 
 Sample APKs for testing are available for download:
 
-📥 [Download Sample APKs (Google Drive)](YOUR_GOOGLE_DRIVE_LINK_HERE)
+📥 [Download Sample APKs (Google Drive)](https://drive.google.com/drive/folders/1XPzMD5lqk2nDob1MAC5yK9C0ajA8ke51?usp=sharing)
 
 | Category | Count |
 |---|---|
